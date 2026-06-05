@@ -1,0 +1,10 @@
+{
+  "name": "Avenir Marketplace",
+  "description": "AVENIR – Complete Production-Ready Ethiopian Marketplace Platform: Products, Services, Properties, Social Commerce Short Videos, Quality Inspection, and AI Grounding.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
