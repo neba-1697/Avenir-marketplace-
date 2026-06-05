@@ -937,7 +937,7 @@ export default function App() {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 pt-8 flex flex-col md:flex-row justify-between items-center text-[11px] text-zinc-550 font-mono">
-          <p>© 2026 Avenir Digital Core Technologies Ltd. Certified escrow. All rights reserved.</p>
+          <p>© 2026 Avenir. Hand-crafted by Nebil Shebab, Full-Stack Developer. Certified escrow. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0 font-bold uppercase text-[#E5C158]">
             <span className="cursor-pointer">Addis Ababa office</span>
             <span>•</span>

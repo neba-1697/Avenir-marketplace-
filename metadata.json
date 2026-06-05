@@ -1,6 +1,6 @@
 {
   "name": "Avenir Marketplace",
-  "description": "AVENIR – Complete Production-Ready Ethiopian Marketplace Platform: Products, Services, Properties, Social Commerce Short Videos, Quality Inspection, and AI Grounding.",
+  "description": "AVENIR – Complete Production-Ready Ethiopian Marketplace Platform: Products, Services, Properties, Social Commerce Short Videos, Quality Inspection, and Interactive Grounding. Hand-crafted by Nebil Shebab, Full-Stack Developer.",
   "requestFramePermissions": [
     "geolocation"
   ],
