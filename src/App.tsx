@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import AvenirDiscover from './components/AvenirDiscover';
@@ -12,6 +13,10 @@ import DeliveryTracker from './components/DeliveryTracker';
 import ProductCard from './components/ProductCard';
 import StoreDetailModal from './components/StoreDetailModal';
 import QuickPreviewModal from './components/QuickPreviewModal';
+import Storefront from './components/Storefront';
+
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
 
 import {
   Language,
@@ -67,6 +72,7 @@ import {
 } from 'lucide-react';
 
 export default function App() {
+  const navigate = useNavigate();
   const [language, setLanguage] = useState<Language>('en');
   const [role, setRole] = useState<Role>('Buyer');
   
@@ -120,6 +126,7 @@ export default function App() {
   const [newListingPrice, setNewListingPrice] = useState('');
   const [newListingDesc, setNewListingDesc] = useState('');
   const [newListingCat, setNewListingCat] = useState('Electronics');
+  const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
 
   // Load backend database on mount
   useEffect(() => {
@@ -130,15 +137,15 @@ export default function App() {
     try {
       const res = await fetch('/api/data');
       const data = await res.json();
-      setStores(data.stores);
-      setProducts(data.products);
-      setServices(data.services);
-      setProperties(data.properties);
-      setVideos(data.videos);
-      setOrders(data.orders);
-      setOnboardings(data.onboardings);
-      setSupportTickets(data.supportTickets);
-      setAuditLogs(data.auditLogs);
+      setStores(data.stores || []);
+      setProducts(data.products || []);
+      setServices(data.services || []);
+      setProperties(data.properties || []);
+      setVideos(data.videos || []);
+      setOrders(data.orders || []);
+      setOnboardings(data.onboardings || []);
+      setSupportTickets(data.supportTickets || []);
+      setAuditLogs(data.auditLogs || []);
 
       // Auto-assign first order as active tracking order for easy simulation
       if (data.orders && data.orders.length > 0) {
@@ -275,6 +282,27 @@ export default function App() {
             setCart([]);
             setIsCartOpen(false);
             fetchData();
+            
+            if (paymentProvider === 'Telebirr') {
+               // Simulate redirect via Telebirr Initiate
+               const tbRes = await fetch('/api/payments/telebirr/initiate', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({
+                   orderId: data.order.id,
+                   amount: data.order.totalAmount + data.order.tax,
+                   currency: 'ETB',
+                   customerPhone: recipientPhone || '+251911001122',
+                   customerEmail: 'buyer@avenir.et'
+                 })
+               });
+               const tbData = await tbRes.json();
+               if(tbData.success) {
+                  // In a real app we'd redirect to tbData.checkoutUrl. Here we just show the tracking which simulates the successful return.
+                  console.log(`Redirecting to Telebirr Checkout: ${tbData.checkoutUrl}`);
+               }
+            }
+
             setActiveTrackOrder(data.order);
             setIsTrackingOpen(true);
           }
@@ -342,6 +370,34 @@ export default function App() {
     return matchesSearch && matchesCat;
   });
 
+  const handleGenerateAiDesc = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!newListingName) {
+      alert("Please enter an Item Name first.");
+      return;
+    }
+    
+    setIsGeneratingDesc(true);
+    try {
+      const res = await fetch('/api/ai/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newListingName, category: newListingCat })
+      });
+      const data = await res.json();
+      if (data.success && data.data && data.data.description) {
+        setNewListingDesc(data.data.description);
+      } else {
+        alert(data.error?.message || "Failed to generate description");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Network error generating description");
+    } finally {
+      setIsGeneratingDesc(false);
+    }
+  };
+
   const categoriesList = [
     { name: 'All', icon: '✨', slug: 'All', count: products.length },
     { name: 'Electronics', icon: '💻', slug: 'Electronics', count: products.filter(p => p.category === 'Electronics').length },
@@ -369,7 +425,10 @@ export default function App() {
         }}
       />
 
-      {/* SECTION 1: HERO */}
+      <Routes>
+        <Route path="/" element={
+          <>
+            {/* SECTION 1: HERO */}
       <Hero 
         language={language} 
         onSearch={(query) => {
@@ -639,7 +698,11 @@ export default function App() {
           {stores.map((store) => (
             <div 
               key={store.id} 
-              onClick={() => setActiveStoreDetail(store)}
+              onClick={() => {
+                const slug = encodeURIComponent(store.name.toLowerCase().replace(/\s+/g, '-'));
+                navigate('/store/' + slug);
+                window.scrollTo(0,0);
+              }}
               className="group bg-white border border-zinc-150 rounded-3xl overflow-hidden shadow-[0_4px_16px_rgba(9,34,21,0.02)] hover:shadow-[0_20px_40px_rgba(9,34,21,0.06)] hover:border-[#115C34] transition-all duration-300 cursor-pointer flex flex-col h-full justify-between"
             >
               {/* Store banner */}
@@ -772,7 +835,7 @@ export default function App() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-[10px] text-[#A4843B] font-mono font-black uppercase tracking-wider">
                     <span>📍 {prop.location}</span>
-                    <span>{prop.propertyType.toUpperCase()}</span>
+                    <span>{prop.propertyType?.toUpperCase()}</span>
                   </div>
 
                   <h3 className="font-serif font-black text-zinc-950 text-xl tracking-tight leading-snug">{prop.title}</h3>
@@ -983,6 +1046,25 @@ export default function App() {
           </div>
         </div>
       </footer>
+      </>
+      } />
+      <Route path="/store/:storeSlug" element={
+        <Storefront
+          stores={stores}
+          products={products}
+          services={services}
+          properties={properties}
+          videos={videos}
+          language={language}
+          onAddToCart={handleAddToCart}
+          favorites={favorites}
+          onToggleFavorite={handleToggleFavorite}
+          onQuickPreview={setPreviewProduct}
+        />
+      } />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      </Routes>
 
       {/* OVERLAY MODULE 1: SHOPPING CART SLIDE OVER DRAWER */}
       {isCartOpen && (
@@ -1449,7 +1531,18 @@ export default function App() {
                     </div>
 
                     <div className="col-span-2 space-y-2">
-                      <label className="text-zinc-505 block">Persuasive description checks</label>
+                      <div className="flex justify-between items-end">
+                        <label className="text-zinc-505 block">Persuasive description checks</label>
+                        <button
+                          type="button"
+                          disabled={isGeneratingDesc || !newListingName}
+                          onClick={handleGenerateAiDesc}
+                          className="text-[10px] font-mono font-bold bg-[#E5C158] text-[#092215] px-3 py-1.5 rounded cursor-pointer hover:bg-[#cfa53b] flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isGeneratingDesc ? <Loader2 className="w-3 h-3 animate-spin"/> : <Sparkle className="w-3 h-3"/>}
+                          Generate via Gemini 3.1
+                        </button>
+                      </div>
                       <textarea 
                         required
                         rows={3}

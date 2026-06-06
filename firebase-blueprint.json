@@ -1,0 +1,200 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing identity information, configuration and contact details.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier of the user matching their Firebase Auth UID." },
+        "email": { "type": "string", "format": "email", "description": "Email address of the user." },
+        "phoneNumber": { "type": "string", "description": "Phone number formatted as +251..." },
+        "passwordHash": { "type": "string", "description": "Hashed password for manual login." },
+        "firstName": { "type": "string", "description": "First name of the user." },
+        "lastName": { "type": "string", "description": "Last name of the user." },
+        "userType": { "type": "string", "enum": ["buyer", "seller", "inspector", "courier", "admin"], "description": "User permissions and operational classification." },
+        "isEmailVerified": { "type": "boolean", "description": "Whether the email is verified." },
+        "isPhoneVerified": { "type": "boolean", "description": "Whether the phone number is verified." },
+        "profileImageUrl": { "type": "string", "description": "URL to the user's avatar image." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of user account creation." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp of last profile update." },
+        "lastLoginAt": { "type": "string", "format": "date-time", "description": "Timestamp of last session start." },
+        "isActive": { "type": "boolean", "description": "Indicates whether the account is currently active." },
+        "suspensionReason": { "type": "string", "description": "Reason for account suspension." },
+        "suspendedAt": { "type": "string", "format": "date-time", "description": "Timestamp when user was suspended." }
+      },
+      "required": ["id", "email", "firstName", "lastName", "userType"]
+    },
+    "SellerVerification": {
+      "title": "Seller Verification",
+      "description": "KYC identity verification record for business merchants.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique verification record ID." },
+        "userId": { "type": "string", "description": "Associated user reference ID." },
+        "businessName": { "type": "string", "description": "Registered trade name of the business." },
+        "businessRegistrationNumber": { "type": "string", "description": "Legal business registry catalog number." },
+        "businessLicenseUrl": { "type": "string", "description": "Reference URL to scanned certificate document." },
+        "ownerIdDocumentUrl": { "type": "string", "description": "Reference URL to physical passport or state card photo." },
+        "bankStatement": { "type": "string", "description": "Reference or log details of bank proof." },
+        "bankAccountNumber": { "type": "string", "description": "Payment bank account number." },
+        "bankCode": { "type": "string", "description": "Associated bank SWIFT/local routing code." },
+        "verificationStatus": { "type": "string", "enum": ["pending", "under_review", "approved", "rejected", "suspended"] },
+        "verificationDate": { "type": "string", "format": "date-time" },
+        "verifiedByAdminId": { "type": "string" },
+        "rejectionReason": { "type": "string" },
+        "kycCompletedAt": { "type": "string", "format": "date-time" },
+        "biometricVerified": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "businessName", "verificationStatus"]
+    },
+    "Store": {
+      "title": "Store",
+      "description": "Enterprise storefront representing a seller's custom brand collection.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique catalog matching store domain." },
+        "ownerId": { "type": "string", "description": "Reference mapping to the managing user ID." },
+        "name": { "type": "string", "description": "Name of the storefront." },
+        "logoUrl": { "type": "string", "description": "Asset URL to shop emblem logo." },
+        "bannerUrl": { "type": "string", "description": "Asset URL to storefront header wallpaper banner." },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "rating": { "type": "number" },
+        "totalSales": { "type": "integer" },
+        "followersCount": { "type": "integer" },
+        "reviewsCount": { "type": "integer" },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "suspended"] },
+        "returnPolicy": { "type": "string" },
+        "deliveryInfo": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "ownerId", "name", "verificationStatus"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A commercial listing offered for trade, properties or services.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique listing catalog identifier ID." },
+        "storeId": { "type": "string", "description": "Underlying manager store ID." },
+        "name": { "type": "string", "description": "Title of the item, property, or expert service." },
+        "price": { "type": "integer", "description": "Price unit value in Ethiopian birr cents (1 ETB = 100 cents)." },
+        "originalPrice": { "type": "integer" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "stock": { "type": "integer" },
+        "rating": { "type": "number" },
+        "reviewsCount": { "type": "integer" },
+        "totalSales": { "type": "integer" },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "rejected"] },
+        "status": { "type": "string", "enum": ["active", "inactive", "delisted"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "storeId", "name", "price", "description", "status"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Secure Escrow-locked commerce deal mapping a buyer-seller commitment.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Primary agreement registration tag ID." },
+        "orderNumber": { "type": "string" },
+        "buyerId": { "type": "string" },
+        "sellerId": { "type": "string" },
+        "storeId": { "type": "string" },
+        "totalAmount": { "type": "integer", "description": "Sum price in ETB cents." },
+        "tax": { "type": "integer", "description": "VAT calculations in cents." },
+        "commission": { "type": "integer", "description": "Avenir agency share in cents." },
+        "itemsJson": { "type": "string", "description": "JSON string containing detail snapshots of items purchased." },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "inspection_scheduled", "inspection_passed", "inspection_failed", "shipped", "in_transit", "delivered", "cancelled", "refunded"] },
+        "paymentProvider": { "type": "string", "enum": ["telebirr", "chapa"] },
+        "paymentStatus": { "type": "string", "enum": ["pending", "escrow_locked", "released_to_seller", "refunded", "failed"] },
+        "transactionId": { "type": "string" },
+        "shippingAddress": { "type": "string" },
+        "recipientPhone": { "type": "string" },
+        "trackingNumber": { "type": "string" },
+        "inspectionScheduledAt": { "type": "string", "format": "date-time" },
+        "inspectorId": { "type": "string" },
+        "inspectionNotes": { "type": "string" },
+        "inspectionReportJson": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "deliveredAt": { "type": "string", "format": "date-time" },
+        "cancelledAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "orderNumber", "buyerId", "sellerId", "totalAmount", "status", "paymentStatus"]
+    },
+    "EscrowTransaction": {
+      "title": "Escrow Transaction",
+      "description": "Real-time state ledger item of secured ledger deposits.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string", "description": "Linked order reference identifier." },
+        "buyerAmount": { "type": "integer" },
+        "sellerAmount": { "type": "integer" },
+        "platformFee": { "type": "integer" },
+        "status": { "type": "string", "enum": ["locked", "released", "disputed", "refunded"] },
+        "lockedAt": { "type": "string", "format": "date-time" },
+        "releaseDate": { "type": "string", "format": "date-time" },
+        "releaseReason": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "orderId", "buyerAmount", "sellerAmount", "status"]
+    },
+    "PaymentMethod": {
+      "title": "Payment Method",
+      "description": "Configured merchant details of payout target.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "provider": { "type": "string", "enum": ["telebirr", "chapa"] },
+        "phoneNumber": { "type": "string" },
+        "accountReference": { "type": "string" },
+        "isDefault": { "type": "boolean" },
+        "verifiedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "provider", "accountReference"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Primary user profiles registered to Avenir Core, searchable by auth matching."
+    },
+    "/seller_verifications/{verificationId}": {
+      "schema": "SellerVerification",
+      "description": "Seller business registrations matching governmental verification criteria."
+    },
+    "/stores/{storeId}": {
+      "schema": "Store",
+      "description": "Active merchant shops hosting catalogs, reviews and brand identities."
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Individual items catalog searchable index comprising all categories."
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Trade agreements recording financial custody and physical transition states."
+    },
+    "/escrow_transactions/{transactionId}": {
+      "schema": "EscrowTransaction",
+      "description": "Secure financial vault listings tracing release audits under Telebirr and Chapa."
+    },
+    "/payment_methods/{paymentMethodId}": {
+      "schema": "PaymentMethod",
+      "description": "Payout routing nodes used for seller fund settlements."
+    }
+  }
+}

@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { ShoppingBag, Heart, Landmark, Globe, Search, ClipboardList, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShoppingBag, Heart, Landmark, Search, ClipboardList, ShieldCheck, User } from 'lucide-react';
 import { Language } from '../types';
 import { translations } from '../translations';
 
@@ -103,6 +104,15 @@ export default function Header({
               </button>
             ))}
           </div>
+
+          {/* User Sign In */}
+          <Link
+            to="/login"
+            className="flex items-center gap-1.5 text-zinc-700 hover:text-zinc-950 transition-colors py-1.5 px-3 bg-white border border-zinc-205 rounded-lg text-xs font-bold cursor-pointer hover:border-zinc-350"
+          >
+            <User className="w-3.5 h-3.5 text-zinc-500" />
+            <span className="font-sans">Sign In</span>
+          </Link>
 
           {/* Seller registry */}
           <button
