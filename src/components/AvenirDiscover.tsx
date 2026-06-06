@@ -233,7 +233,7 @@ export default function AvenirDiscover({
                 {/* Merchant detail line */}
                 <div className="flex items-center gap-2.5">
                   <div className="w-10 h-10 rounded-full border border-white/15 bg-zinc-900 overflow-hidden shrink-0 shadow-sm">
-                    <img src={currVideo.storeLogo} alt={currVideo.storeName} className="w-full h-full object-cover" />
+                    <img src={currVideo.storeLogo} alt={currVideo.storeName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
@@ -314,7 +314,7 @@ export default function AvenirDiscover({
                     className="bg-white border border-zinc-200 rounded-2xl p-4 flex gap-4 hover:border-[#115C34]/35 transition-all shadow-[0_2px_8px_rgba(9,34,21,0.01)] hover:shadow-md"
                   >
                     {completeProduct ? (
-                      <img src={completeProduct.image} alt={tag.name} className="w-14 h-14 rounded-xl object-cover bg-zinc-50 shrink-0 border border-zinc-150 shadow-sm" />
+                      <img src={completeProduct.image} alt={tag.name} className="w-14 h-14 rounded-xl object-cover bg-zinc-50 shrink-0 border border-zinc-150 shadow-sm" referrerPolicy="no-referrer" />
                     ) : (
                       <div className="w-14 h-14 bg-zinc-50 border border-zinc-200 rounded-xl shrink-0 flex items-center justify-center">
                         <ShoppingBag className="w-5 h-5 text-zinc-400" />
@@ -374,7 +374,7 @@ export default function AvenirDiscover({
                       : 'border-zinc-200 hover:border-zinc-400'
                   }`}
                 >
-                  <img src={vid.videoUrl} alt={vid.title} className="w-full h-full object-cover brightness-80 transition-transform duration-500 group-hover:scale-105" />
+                  <img src={vid.videoUrl} alt={vid.title} className="w-full h-full object-cover brightness-80 transition-transform duration-500 group-hover:scale-105" referrerPolicy="no-referrer" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex flex-col justify-end p-2 pb-2.5">
                     <span className="text-[7.5px] font-mono font-black text-white truncate max-w-full uppercase block text-center leading-none">@{vid.storeName}</span>
                   </div>

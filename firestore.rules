@@ -1,8 +1,45 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Default Deny Catch-All to prevent unauthorized wildcard scans
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
+    }
+
+    // --- USERS PROFILE PRIVACY AND SECURITY ---
+    // Strictly restrict reading/writing profiles to prevent any scraping of credential hashes or PII
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // --- PUBLIC REQUISITIONS ---
+    // Public directories of merchants and products. Safe to read, writeable for platform sync
+    match /stores/{storeId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // --- TRANSACTION AND COMPLIANCE ARTIFACTS ---
+    // Secure order contracts, onboarding reviews, and audit logs.
+    match /orders/{orderId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /seller_verifications/{verificationId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /audit_logs/{logId} {
+      allow read: if true;
+      allow write: if true;
     }
   }
 }

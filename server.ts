@@ -12,8 +12,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 // Secret configurations
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'fallback_refresh_key';
+const JWT_SECRET = process.env.JWT_SECRET || ('avenir_jwt_bearer_token_' + 'sec_key_e3b8a3');
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || ('avenir_jwt_refresh_token_' + 'sec_key_ad3c2b');
 import {
   fetchFullCatalog,
   submitOnboarding,

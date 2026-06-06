@@ -259,7 +259,12 @@ export default function StoreDetailModal({
                   >
                     <div className="space-y-4">
                       <div className="flex gap-3.5 items-center">
-                        <img src={serv.image} alt={serv.name} className="w-12 h-12 rounded-full object-cover border border-zinc-150" />
+                        <img 
+                          src={serv.image} 
+                          alt={serv.name} 
+                          className="w-12 h-12 rounded-full object-cover border border-zinc-150" 
+                          referrerPolicy="no-referrer"
+                        />
                         <div>
                           <span className="bg-emerald-50 text-emerald-700 text-[8px] font-mono font-black border border-emerald-100 px-2 py-0.5 rounded-full uppercase tracking-wider">
                             Verified Provider

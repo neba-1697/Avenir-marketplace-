@@ -123,7 +123,12 @@ export default function SellerDashboard({ language, store, onAddListing }: Selle
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
           <div className="flex items-center gap-4">
-            <img src={store.logo} alt="Store Logo" className="w-12 h-12 rounded-full border border-zinc-800 object-cover bg-zinc-800" />
+            <img 
+              src={store.logo} 
+              alt="Store Logo" 
+              className="w-12 h-12 rounded-full border border-zinc-800 object-cover bg-zinc-800" 
+              referrerPolicy="no-referrer"
+            />
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-serif font-black text-white tracking-widest uppercase">{store.name}</h2>

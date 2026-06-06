@@ -364,16 +364,58 @@ export async function fetchFullCatalog() {
       getDocs(collection(db, 'seller_verifications'))
     ]);
 
-    const stores = lg(storesSnap);
+    const stores = lg(storesSnap).map((s: any) => ({
+      ...s,
+      logo: s.logo || s.logoUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=200&auto=format&fit=crop',
+      logoUrl: s.logoUrl || s.logo || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=200&auto=format&fit=crop',
+      banner: s.banner || s.bannerUrl || 'https://images.unsplash.com/photo-1468436139062-f60a71c5c892?q=80&w=1000&auto=format&fit=crop',
+      bannerUrl: s.bannerUrl || s.banner || 'https://images.unsplash.com/photo-1468436139062-f60a71c5c892?q=80&w=1000&auto=format&fit=crop',
+      verified: s.verified !== undefined ? s.verified : true
+    }));
+
     const allProducts = lg(productsSnap);
     const auditLogs = lg(auditsSnap).sort((a: any, b: any) => new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime());
     const orders = lg(ordersSnap);
     const onboardings = lg(onbsSnap);
 
-    // Partition into UI expected formats
-    const products = allProducts.filter((p: any) => !p.id.startsWith('serv-') && !p.id.startsWith('prop-'));
-    const services = allProducts.filter((p: any) => p.id.startsWith('serv-'));
-    const properties = allProducts.filter((p: any) => p.id.startsWith('prop-'));
+    // Partition and map into UI expected formats with full image/imageUrl and title/name compatibility
+    const products = allProducts
+      .filter((p: any) => !p.id.startsWith('serv-') && !p.id.startsWith('prop-'))
+      .map((p: any) => ({
+        ...p,
+        image: p.image || p.imageUrl || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=600&auto=format&fit=crop',
+        imageUrl: p.imageUrl || p.image || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=600&auto=format&fit=crop'
+      }));
+
+    const services = allProducts
+      .filter((p: any) => p.id.startsWith('serv-'))
+      .map((s: any) => ({
+        ...s,
+        image: s.image || s.imageUrl || 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?q=80&w=600&auto=format&fit=crop',
+        imageUrl: s.imageUrl || s.image || 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?q=80&w=600&auto=format&fit=crop'
+      }));
+
+    const properties = allProducts
+      .filter((p: any) => p.id.startsWith('prop-'))
+      .map((pr: any) => {
+        let propertyType = pr.propertyType;
+        if (!propertyType) {
+          propertyType = pr.id.includes('apartment') ? 'apartment' : 'commercial';
+        }
+        let listingType = pr.listingType;
+        if (!listingType) {
+          listingType = pr.price > 1000000 ? 'buy' : 'rent';
+        }
+        return {
+          ...pr,
+          title: pr.title || pr.name || 'Premium Property Listing',
+          name: pr.name || pr.title || 'Premium Property Listing',
+          image: pr.image || pr.imageUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=600&auto=format&fit=crop',
+          imageUrl: pr.imageUrl || pr.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=600&auto=format&fit=crop',
+          propertyType,
+          listingType
+        };
+      });
 
     return {
       stores,
